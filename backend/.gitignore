@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# dotenv
+*.env
+*.env.*
+!.env.example
+
+# VS Code
+.vscode/
+
+# Project-specific
+.env
+.env.dev
+.env.prod
