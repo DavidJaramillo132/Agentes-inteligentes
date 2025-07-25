@@ -13,7 +13,6 @@ from modules.auth import auth_router
 app = FastAPI()
 app.mount("/agents", agent_app)
 
-
 app.include_router(users_router, prefix="/users", tags=["user"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 

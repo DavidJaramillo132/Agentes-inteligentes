@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple
 from fastapi import Depends, HTTPException, status
 import jwt
@@ -5,6 +6,7 @@ from datetime import timedelta
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jwt.exceptions import InvalidTokenError
+logger = logging.getLogger(__name__)
 
 
 from .token_service import TokenService
@@ -80,6 +82,7 @@ class AuthService:
         return user
 
     async def login_user(self, user: UserCreateSchema) -> LoginResponseSchema:
+        logger.info(f"Intentando login para usuario: {user.email}")
         user = await self.authenticate_user(user.email, user.password)
         if not user:
             raise HTTPException(
