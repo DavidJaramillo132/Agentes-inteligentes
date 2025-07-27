@@ -20,6 +20,6 @@ export const siteRoutes :Routes= [
     {
         path: '',
         component: Login,
-    }
+    },
 
 ];
