@@ -14,6 +14,13 @@ export class Login {
 
     constructor(private router: Router, private http: HttpClient) { }
 
+    // Generar user ID basado en el email
+    private generateUserId(email: string): string {
+        const timestamp = Date.now();
+        const emailHash = btoa(email).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
+        return `user_${emailHash}_${timestamp}`;
+    }
+
     login(): void {
         if(this.validaciones_login()) {
             const payload = {
@@ -23,7 +30,23 @@ export class Login {
             console.log('Enviando login:', payload);
             this.http.post('http://localhost:8000/auth/login', payload)
                 .subscribe({
-                    next: (res) => {
+                    next: (res: any) => {
+                        console.log('Respuesta del login:', res);
+                        
+                        // Guardar información del usuario en localStorage
+                        const userInfo = {
+                            email: this.username,
+                            userId: res.user?.id || res.user?._id || this.generateUserId(this.username),
+                            loginTime: Date.now(),
+                            accessToken: res.access_token?.access_token
+                        };
+                        
+                        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('accessToken', res.access_token?.access_token || '');
+                        
+                        console.log('Información del usuario guardada:', userInfo);
+                        
                         alert('Usuario logueado correctamente');
                         this.router.navigate(['/agents']);
                     },

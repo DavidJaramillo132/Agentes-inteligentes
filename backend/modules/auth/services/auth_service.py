@@ -26,7 +26,6 @@ CRENDENTIAL_EXCEPTION = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
-
 class AuthService:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
@@ -83,19 +82,31 @@ class AuthService:
 
     async def login_user(self, user: UserCreateSchema) -> LoginResponseSchema:
         logger.info(f"Intentando login para usuario: {user.email}")
-        user = await self.authenticate_user(user.email, user.password)
-        if not user:
+        authenticated_user = await self.authenticate_user(user.email, user.password)
+        if not authenticated_user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
             )
+        
+        # Crear token de acceso incluyendo el ID del usuario
         access_expiration = timedelta(minutes=settings.jwt.jwt_expiration_minutes)
         access_token = self.token_service.create_access_token(
-            data={"sub": user["email"]}, expires_delta=access_expiration
+            data={
+                "sub": authenticated_user["email"],
+                "user_id": str(authenticated_user["_id"]),  # Incluir ID en el token
+                "email": authenticated_user["email"]
+            }, 
+            expires_delta=access_expiration
         )
 
         token_obj = Token(access_token=access_token, token_type="bearer")
 
+        # Crear respuesta del usuario incluyendo el ID
+        user_response = UserResponseSchema(**authenticated_user)
+        
+        logger.info(f"Login exitoso para usuario: {authenticated_user['email']} con ID: {authenticated_user['_id']}")
+
         return LoginResponseSchema(
-            access_token=token_obj, user=UserResponseSchema(**user)
+            access_token=token_obj, user=user_response
         )

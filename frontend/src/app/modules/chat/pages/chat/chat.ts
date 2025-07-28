@@ -100,6 +100,9 @@ export class Chat implements OnDestroy, AfterViewChecked {
     this.isSending = true;
     this.connectionStatus.setStatus('connecting');
 
+    // Iniciar nueva sesión de chat
+    this.sseService.startNewChatSession();
+
     // Agregar mensaje del usuario
     this.messageManager.addUserMessage(this.messages, content);
     this.scrollManager.scheduleScrollToBottom();

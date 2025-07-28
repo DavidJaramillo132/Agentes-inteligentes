@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core"
 import { Observable } from "rxjs"
 import { environment } from '@environments/environment.development';
 import { env } from "process";
+import { UserService } from '../../../shared/services/user.service';
 
 
 export interface SSEMessage {
@@ -32,16 +33,40 @@ export interface StreamResponse {
 })
 export class SseService {
   private readonly apiUrl = environment.agentsDirectUrl;
+  private currentSessionId: string | null = null;
+
+  constructor(private userService: UserService) { }
+
+  // Método para iniciar una nueva sesión de chat
+  startNewChatSession(): void {
+    this.currentSessionId = this.userService.generateSessionId();
+    console.log('🆕 Nueva sesión de chat iniciada:', this.currentSessionId);
+  }
+
+  // Método para obtener el session ID actual
+  private getCurrentSessionId(): string {
+    if (!this.currentSessionId) {
+      this.startNewChatSession();
+    }
+    return this.currentSessionId!;
+  }
 
   streamFromAgent(agentId: string, message: string): Observable<StreamResponse> {
     const url = `${this.apiUrl}/${agentId}/runs`
-
+    
+    // Obtener información del usuario logueado
+    const userId = this.userService.getCurrentUserId();
+    const sessionId = this.getCurrentSessionId(); // Usar sesión persistente
+    
+    console.log('🔐 Usuario actual:', userId);
+    console.log('🔑 Sesión actual:', sessionId);
+    
     const formData = new FormData()
     formData.append("message", message)
     formData.append("stream", "true")
     formData.append("monitor", "false")
-    formData.append("session_id", "default_session")
-    formData.append("user_id", "default_user")
+    formData.append("session_id", sessionId)
+    formData.append("user_id", userId)
 
     return new Observable<StreamResponse>((observer) => {
       const controller = new AbortController()
