@@ -44,7 +44,20 @@ export class UserService {
       return false;
     }
     
-    return localStorage.getItem('isLoggedIn') === 'true';
+    // Verificar tanto el flag isLoggedIn como la existencia de userInfo
+    const isLoggedFlag = localStorage.getItem('isLoggedIn') === 'true';
+    const userInfo = this.getUserInfo();
+    
+    // Usuario está logueado si tiene el flag Y tiene información de usuario válida
+    const isAuthenticated = isLoggedFlag && userInfo !== null && !!userInfo.userId;
+    
+    // Si no está autenticado pero tiene datos residuales, limpiarlos
+    if (!isAuthenticated && (isLoggedFlag || userInfo)) {
+      console.log('🧹 Limpiando datos de sesión inválidos');
+      this.logout();
+    }
+    
+    return isAuthenticated;
   }
 
   // Obtener user ID del usuario actual
@@ -92,5 +105,20 @@ export class UserService {
     localStorage.removeItem('userInfo');
     localStorage.removeItem('isLoggedIn');  
     localStorage.removeItem('accessToken');
+  }
+
+  // Establecer datos de usuario al hacer login
+  setUserSession(userInfo: UserInfo): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+    
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    localStorage.setItem('isLoggedIn', 'true');
+    if (userInfo.accessToken) {
+      localStorage.setItem('accessToken', userInfo.accessToken);
+    }
+    
+    console.log('✅ Sesión de usuario establecida:', userInfo.email);
   }
 }
