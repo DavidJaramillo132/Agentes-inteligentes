@@ -12,27 +12,60 @@
             Ver otros agentes
         </button>
         <!-- Botón de nuevo chat -->
-        <button
+        <button (click)="startNewChat()"
             class=" flex justify-center gap-2 bordertext-center rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all cursor-pointer py-2 px-4 mb-4 text-white font-semibold">
             <mat-icon>edit_square</mat-icon> New chat
         </button>
 
         <!-- Historial de chats -->
         <div class="flex-1 overflow-y-auto">
-            <!-- Chats anteriores -->
-            <app-chat-button text="AI Chat Tool Ethics"
-                icon="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
-            </app-chat-button>
-            <app-chat-button text="AI Chat Tool Impact Writing"
-                icon="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
-            </app-chat-button>
+            <!-- Mensaje cuando no hay chats -->
+            <div *ngIf="(chatSessions$ | async)?.length === 0" class="text-gray-400 text-sm text-center py-4">
+                No hay conversaciones anteriores
+            </div>
+            
+            <!-- Lista de chats anteriores -->
+            <div *ngFor="let session of chatSessions$ | async; trackBy: trackBySessionId" 
+                 class="group relative mb-2">
+                <div (click)="selectChatSession(session)"
+                     class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 cursor-pointer transition-colors">
+                    <div class="flex items-start gap-3 flex-1 min-w-0">
+                        <mat-icon class="text-blue-400 text-lg mt-0.5">chat</mat-icon>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white text-sm font-medium truncate" 
+                               [title]="session.title">
+                                {{ session.title }}
+                            </p>
+                            <div class="flex items-center gap-2 text-xs text-gray-400 mt-1">
+                                <span>{{ formatDate(session.updated_at) }}</span>
+                                <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
+                                <span>{{ session.message_count }} mensajes</span>
+                            </div>
+                            <p *ngIf="session.last_message" 
+                               class="text-xs text-gray-500 mt-1 truncate"
+                               [title]="session.last_message">
+                                {{ session.last_message }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón de eliminar (visible al hacer hover) -->
+                    <button (click)="deleteSession(session); $event.stopPropagation()"
+                            class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-600/20 transition-all"
+                            title="Eliminar conversación">
+                        <mat-icon class="text-red-400 text-sm">delete</mat-icon>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Menú inferior -->
         <div class="border-t border-blue-800/50 pt-2">
-            <app-chat-button text="Clear conversations"
-                icon="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z">
-            </app-chat-button>
+            <button (click)="clearConversations()"
+                class="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-gray-700/50 transition-colors text-left text-gray-300 hover:text-white">
+                <mat-icon class="text-lg">delete_sweep</mat-icon>
+                <span class="text-sm">Clear conversations</span>
+            </button>
             <app-chat-button text="Light mode"
                 icon="M12 3v1m0 16v1m8.66-8.66h-1M4.34 12H3m15.36-6.36l-.7.7M6.34 17.66l-.7.7m12.02 0l-.7-.7M6.34 6.34l-.7-.7M12 5a7 7 0 100 14 7 7 0 000-14z">
             </app-chat-button>

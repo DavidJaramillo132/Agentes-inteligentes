@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface UserInfo {
   email: string;
@@ -12,19 +13,37 @@ export interface UserInfo {
 })
 export class UserService {
 
-  constructor() { }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+
+  // Verificar si estamos en el navegador
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
 
   // Obtener información del usuario logueado
   getUserInfo(): UserInfo | null {
+    if (!this.isBrowser()) {
+      return null;
+    }
+    
     const userInfoStr = localStorage.getItem('userInfo');
     if (userInfoStr) {
-      return JSON.parse(userInfoStr);
+      try {
+        return JSON.parse(userInfoStr);
+      } catch (error) {
+        console.error('Error parsing user info:', error);
+        return null;
+      }
     }
     return null;
   }
 
   // Verificar si el usuario está logueado
   isLoggedIn(): boolean {
+    if (!this.isBrowser()) {
+      return false;
+    }
+    
     return localStorage.getItem('isLoggedIn') === 'true';
   }
 
@@ -42,6 +61,10 @@ export class UserService {
 
   // Obtener token de acceso
   getAccessToken(): string | null {
+    if (!this.isBrowser()) {
+      return null;
+    }
+    
     const userInfo = this.getUserInfo();
     return userInfo?.accessToken || localStorage.getItem('accessToken');
   }
@@ -62,8 +85,12 @@ export class UserService {
 
   // Cerrar sesión
   logout(): void {
+    if (!this.isBrowser()) {
+      return;
+    }
+    
     localStorage.removeItem('userInfo');
-    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('isLoggedIn');  
     localStorage.removeItem('accessToken');
   }
 }

@@ -30,3 +30,15 @@ export interface ChatMessage {
   event: EventType
   timestamp: number
 }
+
+export interface ChatSession {
+  session_id: string
+  agent_id: string
+  user_id: string
+  title: string
+  created_at: number
+  updated_at: number
+  message_count: number
+  last_message?: string
+  messages?: ChatMessage[] // Almacenar los mensajes completos de la sesión
+}
