@@ -1,6 +1,6 @@
 <div class="flex min-h-screen h-full relative bg-base-200">
   <!-- Sidebar placeholder - puedes agregar tu sidebar aquí -->
-  <app-sidebar></app-sidebar>
+  <app-sidebar [agentId]="agentId() || ''"></app-sidebar>
 
   <div class="chat-container h-screen w-full p-4 md:p-8 flex flex-col gap-4 max-h-screen">
     <!-- Header mejorado -->

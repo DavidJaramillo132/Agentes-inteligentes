@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core"
 import { Observable } from "rxjs"
 import { environment } from '@environments/environment.development';
 import { env } from "process";
+import { UserService } from '../../../shared/services/user.service';
+import { ChatHistoryService } from './chat-history.service';
 
 
 export interface SSEMessage {
@@ -32,16 +34,62 @@ export interface StreamResponse {
 })
 export class SseService {
   private readonly apiUrl = environment.agentsDirectUrl;
+  private currentSessionId: string | null = null;
+
+  constructor(
+    private userService: UserService,
+    private chatHistoryService: ChatHistoryService
+  ) { }
+
+  // Método para iniciar una nueva sesión de chat
+  startNewChatSession(): void {
+    this.currentSessionId = this.userService.generateSessionId();
+    console.log('🆕 Nueva sesión de chat iniciada:', this.currentSessionId);
+  }
+
+  // Método para establecer una sesión específica
+  setCurrentSession(sessionId: string): void {
+    this.currentSessionId = sessionId;
+    console.log('🔄 Sesión establecida:', this.currentSessionId);
+  }
+
+  // Método para obtener el session ID actual
+  getCurrentSessionId(): string {
+    if (!this.currentSessionId) {
+      this.startNewChatSession();
+    }
+    return this.currentSessionId!;
+  }
+
+  // Método para obtener el session ID actual
+  private getSessionId(): string {
+    return this.getCurrentSessionId();
+  }
 
   streamFromAgent(agentId: string, message: string): Observable<StreamResponse> {
     const url = `${this.apiUrl}/${agentId}/runs`
-
+    
+    // Obtener información del usuario logueado
+    const userId = this.userService.getCurrentUserId();
+    const sessionId = this.getSessionId(); // Usar sesión persistente
+    
+    console.log('🔐 Usuario actual:', userId);
+    console.log('🔑 Sesión actual:', sessionId);
+    
+    // Registrar el mensaje del usuario en el historial
+    this.chatHistoryService.saveOrUpdateSession({
+      session_id: sessionId,
+      agent_id: agentId,
+      user_id: userId,
+      message: message
+    });
+    
     const formData = new FormData()
     formData.append("message", message)
     formData.append("stream", "true")
     formData.append("monitor", "false")
-    formData.append("session_id", "default_session")
-    formData.append("user_id", "default_user")
+    formData.append("session_id", sessionId)
+    formData.append("user_id", userId)
 
     return new Observable<StreamResponse>((observer) => {
       const controller = new AbortController()

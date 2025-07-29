@@ -10,4 +10,5 @@ import { CommonModule } from '@angular/common';
 export class ChatButtonComponent {
     @Input() icon: string = 'M12 4v16m8-8H4'; // SVG path por defecto
     @Input() text: string = 'Button';
+    
 }

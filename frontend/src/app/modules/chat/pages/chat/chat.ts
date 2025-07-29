@@ -7,9 +7,11 @@ import {
   type AfterViewChecked,
   type OnDestroy,
   input,
+  OnInit,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import type { Subscription } from 'rxjs';
 import type { ChatMessage, EventType } from './../../models/chat-model';
 import { SseService, type StreamResponse } from './../../services/sse-service';
@@ -21,6 +23,7 @@ import { ConnectionStatusService } from './../../services/connection-status.serv
 import { TypewriterService } from './../../services/typewriter.service';
 import { ScrollManagerService } from './../../services/scroll-manager.service';
 import { MessageManagerService } from './../../services/message-manager.service';
+import { ChatHistoryService } from './../../services/chat-history.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
@@ -36,7 +39,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar';
   templateUrl: './chat.html',
   styleUrls: ['./chat.css'],
 })
-export class Chat implements OnDestroy, AfterViewChecked {
+export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer', { static: false })
   private messagesContainer!: ElementRef;
 
@@ -54,6 +57,7 @@ export class Chat implements OnDestroy, AfterViewChecked {
   private sseService = inject(SseService);
   private cdr = inject(ChangeDetectorRef);
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
 
   // Servicios de utilidades
   protected chatUtils = inject(ChatUtilsService);
@@ -61,6 +65,7 @@ export class Chat implements OnDestroy, AfterViewChecked {
   private typewriter = inject(TypewriterService);
   private scrollManager = inject(ScrollManagerService);
   private messageManager = inject(MessageManagerService);
+  private chatHistoryService = inject(ChatHistoryService);
 
   // Subscripciones
   private subscription: Subscription | null = null;
@@ -77,6 +82,52 @@ export class Chat implements OnDestroy, AfterViewChecked {
       ],
     ],
   });
+
+  ngOnInit(): void {
+    // Verificar si hay un session_id en los query parameters
+    this.route.queryParams.subscribe(params => {
+      const sessionId = params['session_id'];
+      if (sessionId) {
+        console.log('🔄 Estableciendo sesión desde URL:', sessionId);
+        this.sseService.setCurrentSession(sessionId);
+        this.loadSessionMessages(sessionId);
+      }
+    });
+  }
+
+  /**
+   * Carga los mensajes de una sesión específica
+   */
+  private loadSessionMessages(sessionId: string): void {
+    const agentId = this.agentId();
+    if (!agentId) {
+      console.warn('⚠️ No se puede cargar mensajes sin agentId');
+      return;
+    }
+
+    const sessionMessages = this.chatHistoryService.getSessionMessages(sessionId, agentId);
+    if (sessionMessages.length > 0) {
+      console.log('📜 Cargando mensajes de la sesión:', sessionMessages);
+      
+      // Limpiar mensajes actuales
+      this.messageManager.clearMessages(this.messages);
+      
+      // Cargar mensajes de la sesión
+      sessionMessages.forEach(message => {
+        this.messages.push({ ...message });
+      });
+      
+      // Programar scroll después de que se rendericen los mensajes
+      setTimeout(() => {
+        this.scrollManager.scheduleScrollToBottom();
+        this.cdr.detectChanges();
+      }, 100);
+      
+      console.log('✅ Mensajes de sesión cargados:', this.messages.length);
+    } else {
+      console.log('ℹ️ No se encontraron mensajes para la sesión:', sessionId);
+    }
+  }
 
   ngAfterViewChecked() {
     this.scrollManager.executeScheduledScroll(this.messagesContainer);
@@ -95,15 +146,41 @@ export class Chat implements OnDestroy, AfterViewChecked {
 
     // Limpiar estado anterior
     this.cleanup();
-    this.messageManager.clearMessages(this.messages);
+    
+    // Solo limpiar mensajes si no estamos cargando una sesión existente
+    if (!this.route.snapshot.queryParams['session_id']) {
+      this.messageManager.clearMessages(this.messages);
+    }
+    
     this.currentMessage = null;
     this.isSending = true;
     this.connectionStatus.setStatus('connecting');
+
+    // Solo iniciar nueva sesión si no hay una sesión activa
+    const currentSessionId = this.sseService.getCurrentSessionId();
+    if (!currentSessionId || this.route.snapshot.queryParams['session_id']) {
+      // Si no hay sesión o si se está restaurando una sesión específica, no crear nueva
+      if (!this.route.snapshot.queryParams['session_id']) {
+        this.sseService.startNewChatSession();
+      }
+    }
 
     // Agregar mensaje del usuario
     this.messageManager.addUserMessage(this.messages, content);
     this.scrollManager.scheduleScrollToBottom();
     this.cdr.detectChanges();
+
+    // Registrar el mensaje del usuario en el historial
+    const agentId = this.agentId();
+    if (agentId) {
+      this.chatHistoryService.saveOrUpdateSession({
+        session_id: this.sseService.getCurrentSessionId(),
+        agent_id: agentId,
+        user_id: this.chatHistoryService['userService'].getCurrentUserId(),
+        message: content,
+        messages: [...this.messages] // Guardar todos los mensajes actuales
+      });
+    }
 
     // Iniciar stream
     this.subscription = this.sseService
@@ -231,6 +308,16 @@ export class Chat implements OnDestroy, AfterViewChecked {
     // Asegurar que el último mensaje se muestre completamente
     if (this.currentMessage) {
       this.messageManager.completeMessage(this.currentMessage);
+    }
+
+    // Actualizar el historial con todos los mensajes de la conversación
+    const agentId = this.agentId();
+    if (agentId && this.messages.length > 0) {
+      this.chatHistoryService.updateSessionMessages(
+        this.sseService.getCurrentSessionId(),
+        agentId,
+        [...this.messages]
+      );
     }
 
     this.cdr.detectChanges();
