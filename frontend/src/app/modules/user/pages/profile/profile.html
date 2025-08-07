@@ -1,0 +1,167 @@
+<div class="min-h-screen bg-base-200 py-8">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center min-h-[50vh]">
+    <div class="loading loading-spinner loading-lg text-primary"></div>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!isLoading && userInfo" class="container mx-auto px-4 max-w-4xl">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-4 mb-6">
+        <button (click)="goBack()" 
+                class="btn btn-ghost btn-circle">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            Mi Perfil
+          </h1>
+          <p class="text-base-content/70 mt-1">Gestiona tu información personal y configuración</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="card bg-base-100 shadow-xl mb-8">
+      <div class="card-body">
+        <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+          
+          <!-- Avatar -->
+          <div class="flex flex-col items-center">
+            <div class="avatar placeholder">
+              <div class="bg-primary text-primary-content rounded-full w-24 h-24">
+                <span class="text-2xl font-bold">{{ getUserInitials() }}</span>
+              </div>
+            </div>
+            <span class="badge badge-primary badge-outline mt-3">Usuario Activo</span>
+          </div>
+
+          <!-- User Info -->
+          <div class="flex-1 text-center md:text-left">
+            <h2 class="text-2xl font-bold mb-2">{{ getDisplayName() }}</h2>
+            <p class="text-base-content/70 mb-4">{{ userInfo.email }}</p>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+              
+              <!-- Login Time -->
+              <div class="stat bg-base-200 rounded-xl p-4">
+                <div class="stat-figure text-primary">
+                  <mat-icon class="text-2xl">schedule</mat-icon>
+                </div>
+                <div class="stat-title text-sm">Último acceso</div>
+                <div class="stat-value text-lg">{{ getTimeSinceLogin(userInfo.loginTime) }}</div>
+                <div class="stat-desc">{{ formatLoginTime(userInfo.loginTime) }}</div>
+              </div>
+
+              <!-- User ID -->
+              <div class="stat bg-base-200 rounded-xl p-4">
+                <div class="stat-figure text-secondary">
+                  <mat-icon class="text-2xl">fingerprint</mat-icon>
+                </div>
+                <div class="stat-title text-sm">ID de Usuario</div>
+                <div class="stat-value text-sm font-mono break-all">{{ userInfo.userId }}</div>
+                <div class="stat-desc">Identificador único</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Details -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      
+      <!-- Account Information -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title flex items-center gap-2">
+            <mat-icon>person</mat-icon>
+            Información de la Cuenta
+          </h3>
+          
+          <div class="space-y-4 mt-4">
+            <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+              <div>
+                <p class="font-medium">Correo Electrónico</p>
+                <p class="text-sm text-base-content/70">{{ userInfo.email }}</p>
+              </div>
+              <mat-icon class="text-base-content/50">email</mat-icon>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+              <div>
+                <p class="font-medium">Estado de la Cuenta</p>
+                <p class="text-sm text-success">Activa</p>
+              </div>
+              <mat-icon class="text-success">check_circle</mat-icon>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+              <div>
+                <p class="font-medium">Tipo de Usuario</p>
+                <p class="text-sm text-base-content/70">Usuario Estándar</p>
+              </div>
+              <mat-icon class="text-base-content/50">account_circle</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session Information -->
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title flex items-center gap-2">
+            <mat-icon>security</mat-icon>
+            Información de Sesión
+          </h3>
+          
+          <div class="space-y-4 mt-4">
+            <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+              <div>
+                <p class="font-medium">Sesión Iniciada</p>
+                <p class="text-sm text-base-content/70">{{ formatLoginTime(userInfo.loginTime) }}</p>
+              </div>
+              <mat-icon class="text-base-content/50">login</mat-icon>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+              <div>
+                <p class="font-medium">Tiempo Activo</p>
+                <p class="text-sm text-base-content/70">{{ getTimeSinceLogin(userInfo.loginTime) }}</p>
+              </div>
+              <mat-icon class="text-base-content/50">timer</mat-icon>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg" *ngIf="userInfo.accessToken">
+              <div>
+                <p class="font-medium">Token de Acceso</p>
+                <p class="text-sm text-success">Válido</p>
+              </div>
+              <mat-icon class="text-success">verified_user</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !userInfo" class="flex flex-col items-center justify-center min-h-[50vh] text-center">
+    <mat-icon class="text-6xl text-error mb-4">error_outline</mat-icon>
+    <h2 class="text-2xl font-bold mb-2">Error al cargar el perfil</h2>
+    <p class="text-base-content/70 mb-6">No se pudo cargar la información del usuario</p>
+    <button [routerLink]="['/login']" class="btn btn-primary">
+      <mat-icon>login</mat-icon>
+      Iniciar Sesión
+    </button>
+  </div>
+
+</div>

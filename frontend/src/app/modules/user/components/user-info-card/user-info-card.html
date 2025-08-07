@@ -1,0 +1,51 @@
+<div class="card bg-base-100 shadow-xl">
+  <div class="card-body">
+    
+    <!-- User Avatar and Basic Info -->
+    <div class="flex items-center gap-4 mb-4">
+      <div class="avatar placeholder">
+        <div class="bg-primary text-primary-content rounded-full w-16 h-16">
+          <span class="text-lg font-bold">{{ getUserInitials() }}</span>
+        </div>
+      </div>
+      
+      <div class="flex-1">
+        <h3 class="text-xl font-bold">{{ getDisplayName() }}</h3>
+        <p class="text-base-content/70">{{ userInfo().email }}</p>
+        <span class="badge badge-primary badge-sm">Usuario Activo</span>
+      </div>
+    </div>
+
+    <!-- Additional Details (if enabled) -->
+    <div *ngIf="showDetails()" class="space-y-3">
+      <div class="divider my-2"></div>
+      
+      <div class="flex justify-between items-center text-sm">
+        <span class="text-base-content/70">
+          <mat-icon class="text-sm mr-2">schedule</mat-icon>
+          Último acceso:
+        </span>
+        <span class="font-medium">{{ formatLoginTime(userInfo().loginTime) }}</span>
+      </div>
+
+      <div class="flex justify-between items-center text-sm">
+        <span class="text-base-content/70">
+          <mat-icon class="text-sm mr-2">fingerprint</mat-icon>
+          ID de Usuario:
+        </span>
+        <span class="font-mono text-xs bg-base-200 px-2 py-1 rounded">
+          {{ userInfo().userId.substring(0, 12) }}...
+        </span>
+      </div>
+
+      <div *ngIf="userInfo().accessToken" class="flex justify-between items-center text-sm">
+        <span class="text-base-content/70">
+          <mat-icon class="text-sm mr-2">verified_user</mat-icon>
+          Sesión:
+        </span>
+        <span class="text-success font-medium">Autenticada</span>
+      </div>
+    </div>
+
+  </div>
+</div>
