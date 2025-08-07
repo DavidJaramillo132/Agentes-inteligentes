@@ -1,0 +1,29 @@
+/* Avatar personalizado */
+.avatar.placeholder .bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Efectos hover */
+.cursor-pointer:hover {
+  transition: all 0.2s ease;
+}
+
+.hover\:opacity-80:hover {
+  opacity: 0.8;
+}
+
+/* Transiciones suaves */
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Responsive text */
+@media (max-width: 640px) {
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .text-xs {
+    font-size: 0.75rem;
+  }
+}

@@ -26,6 +26,7 @@ export const siteRoutes :Routes= [
         redirectTo: '/login',
         pathMatch: 'full'
     },
+    // IMPORTANTE: El wildcard debe ir al FINAL de todas las rutas
     {
         path: '**',
         redirectTo: '/login'

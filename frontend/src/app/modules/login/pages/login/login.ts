@@ -57,6 +57,7 @@ export class Login {
         }
     }
 
+
     validaciones_login(): boolean {
         if (!this.username || !this.password) {
             alert('Por favor, complete todos los campos.');

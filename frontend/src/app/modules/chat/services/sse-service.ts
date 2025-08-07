@@ -44,13 +44,13 @@ export class SseService {
   // Método para iniciar una nueva sesión de chat
   startNewChatSession(): void {
     this.currentSessionId = this.userService.generateSessionId();
-    console.log('🆕 Nueva sesión de chat iniciada:', this.currentSessionId);
+    console.log(' Nueva sesión de chat iniciada:', this.currentSessionId);
   }
 
   // Método para establecer una sesión específica
   setCurrentSession(sessionId: string): void {
     this.currentSessionId = sessionId;
-    console.log('🔄 Sesión establecida:', this.currentSessionId);
+    console.log(' Sesión establecida:', this.currentSessionId);
   }
 
   // Método para obtener el session ID actual

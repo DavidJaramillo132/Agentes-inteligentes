@@ -1,0 +1,20 @@
+<div class="flex items-center gap-3">
+  
+  <!-- Avatar -->
+  <div class="avatar placeholder" 
+       [class.cursor-pointer]="clickable()"
+       [class.hover:opacity-80]="clickable()"
+       [routerLink]="clickable() ? ['/account'] : null">
+    <div class="bg-primary text-primary-content rounded-full font-bold transition-all"
+         [ngClass]="getSizeClasses()">
+      <span>{{ getUserInitials() }}</span>
+    </div>
+  </div>
+
+  <!-- User Name (optional) -->
+  <div *ngIf="showName()" class="flex flex-col">
+    <span class="font-medium text-sm">{{ getDisplayName() }}</span>
+    <span class="text-xs text-base-content/70">{{ userInfo().email }}</span>
+  </div>
+
+</div>

@@ -61,16 +61,17 @@
 
         <!-- Menú inferior -->
         <div class="border-t border-blue-800/50 pt-2">
-            <button (click)="clearConversations()"
-                class="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-gray-700/50 transition-colors text-left text-gray-300 hover:text-white">
-                <mat-icon class="text-lg">delete_sweep</mat-icon>
-                <span class="text-sm">Clear conversations</span>
-            </button>
-            <app-chat-button text="Light mode"
-                icon="M12 3v1m0 16v1m8.66-8.66h-1M4.34 12H3m15.36-6.36l-.7.7M6.34 17.66l-.7.7m12.02 0l-.7-.7M6.34 6.34l-.7-.7M12 5a7 7 0 100 14 7 7 0 000-14z">
+            
+            
+            <app-chat-button text='delete conversations'
+                icon="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z
+"
+                (buttonClick)="clearConversations()">
             </app-chat-button>
+            
             <app-chat-button text="My account"
-                icon="M5.121 17.804A9.004 9.004 0 0112 15c2.216 0 4.244.806 5.879 2.137M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                icon="M5.121 17.804A9.004 9.004 0 0112 15c2.216 0 4.244.806 5.879 2.137M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                (buttonClick)="openAccountSettings()">
             </app-chat-button>
         </div>
     </div>

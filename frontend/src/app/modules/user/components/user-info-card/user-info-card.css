@@ -1,0 +1,49 @@
+/* Estilos para el avatar */
+.avatar.placeholder .bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Animaciones suaves */
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge personalizado */
+.badge-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+/* Iconos alineados */
+mat-icon {
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Estilos para texto mono */
+.font-mono {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .avatar .w-16 {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .text-xl {
+    font-size: 1.125rem;
+  }
+}

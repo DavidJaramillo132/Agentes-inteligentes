@@ -1,0 +1,91 @@
+/* Animaciones y transiciones suaves */
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para el avatar */
+.avatar.placeholder .bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Animación para las estadísticas */
+.stat {
+  transition: all 0.3s ease;
+}
+
+.stat:hover {
+  transform: scale(1.02);
+  background-color: hsl(var(--b2));
+}
+
+/* Estilos para los iconos */
+mat-icon {
+  transition: color 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .stat-value {
+    font-size: 1rem !important;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+}
+
+/* Loading animation */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Gradientes personalizados */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Botones con efectos hover */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para el ID de usuario (texto mono) */
+.font-mono {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* Badge personalizado */
+.badge-outline {
+  border: 2px solid currentColor;
+  background: transparent;
+}
+
+/* Contenedor de estadísticas */
+.stat-figure mat-icon {
+  opacity: 0.7;
+}
