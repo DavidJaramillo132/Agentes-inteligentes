@@ -11,6 +11,7 @@ export interface UserInfo {
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserService {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
