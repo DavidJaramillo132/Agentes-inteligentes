@@ -9,11 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class AgentDataService {
   constructor(private http: HttpClient) {}
   private agentsDirectUrl = environment.agentsDirectUrl;
-  
 
-
-  
-  // private emailUser = 
   getAgents() {
     return httpResource(() => this.agentsDirectUrl, {
       parse: (response: any) => {
