@@ -60,17 +60,24 @@
             </div>
         </div>
 
+        <!-- Espaciador para empujar el menú hacia abajo cuando está cerrado -->
+        <div *ngIf="!isOpen" class="flex-1"></div>
+
         <!-- Menú inferior -->
-        <div *ngIf="isOpen" class="border-t border-blue-800/50 pt-2">
-
-
-            <app-chat-button text='delete conversations' icon="M19 7l-.867 12.142A2 2 0 0116.138 
-            21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z
-            " (buttonClick)="clearConversations()">
+        <div class="border-t border-blue-800/50 pt-2">
+            <app-chat-button 
+                text='Delete conversations' 
+                icon="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z"
+                [compactMode]="!isOpen"
+                title="Delete conversations"
+                (buttonClick)="clearConversations()">
             </app-chat-button>
 
-            <app-chat-button text="My account"
+            <app-chat-button 
+                text="My account"
                 icon="M5.121 17.804A9.004 9.004 0 0112 15c2.216 0 4.244.806 5.879 2.137M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                [compactMode]="!isOpen"
+                title="My account"
                 (buttonClick)="openAccountSettings()">
             </app-chat-button>
         </div>

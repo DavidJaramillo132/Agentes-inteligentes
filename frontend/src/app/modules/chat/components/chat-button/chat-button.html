@@ -1,4 +1,6 @@
-<button (click)="onButtonClick()" class="flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+<button (click)="onButtonClick()" 
+    [title]="compactMode ? (title || text) : ''"
+    [class]="compactMode ? 'flex items-center justify-center p-3 rounded-md hover:bg-gray-700 transition-colors duration-200 cursor-pointer' : 'flex items-center gap-3 w-full p-3 rounded-md hover:bg-gray-700 transition-colors duration-200 cursor-pointer'">
     <!-- Icono SVG con property binding -->
     <div class="flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -6,6 +8,6 @@
         </svg>
     </div>
     
-    <!-- Texto -->
-    <span class="text-left truncate">{{ text }}</span>
+    <!-- Texto (oculto en modo compacto) -->
+    <span *ngIf="!compactMode" class="text-left truncate">{{ text }}</span>
 </button>

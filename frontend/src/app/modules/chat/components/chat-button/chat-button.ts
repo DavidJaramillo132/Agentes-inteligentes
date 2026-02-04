@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 export class ChatButtonComponent {
     @Input() icon: string = 'M12 4v16m8-8H4'; // SVG path por defecto
     @Input() text: string = 'Button';
+    @Input() compactMode: boolean = false; // Modo compacto (solo ícono)
+    @Input() title: string = ''; // Tooltip para modo compacto
     
     // Evento para manejar clicks
     @Output() buttonClick = new EventEmitter<void>();

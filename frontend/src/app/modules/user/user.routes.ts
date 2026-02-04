@@ -1,11 +1,10 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '@app/shared/guards/auth.guard';
-import { UserProfile } from './pages/profile/profile';
-import { TestProfile } from './pages/test-profile/test-profile';
 
-export const userRoutes: Routes = [
+// Rutas lazy-loaded (sin el path base 'account')
+export const lazyUserRoutes: Routes = [
   {
-    path: 'account',
+    path: '',
     canActivate: [AuthGuard],
     children: [
       {
@@ -15,11 +14,11 @@ export const userRoutes: Routes = [
       },
       {
         path: 'profile',
-        component: UserProfile,
+        loadComponent: () => import('./pages/profile/profile').then(m => m.UserProfile),
       },
       {
         path: 'test',
-        component: TestProfile,
+        loadComponent: () => import('./pages/test-profile/test-profile').then(m => m.TestProfile),
       },
     ],
   },

@@ -124,16 +124,8 @@
           <!-- Input de mensaje -->
           <div class="flex-1">
             <textarea class="textarea textarea-bordered w-full resize-none min-h-[60px] max-h-[120px]"
-              placeholder="Escribe tu mensaje aquí... (Shift + Enter para nueva línea)" rows="2"
+              placeholder="Escribe tu mensaje aquí..." rows="2"
               formControlName="message" (keydown)="handleKeyDown($event)"></textarea>
-
-            <!-- Mensajes de error -->
-            @if (msgForm.get('message')?.invalid &&
-            msgForm.get('message')?.touched) {
-            <div class="text-error text-sm mt-1">
-              Por favor, escribe un mensaje antes de enviar.
-            </div>
-            }
           </div>
 
           <!-- Botón de envío -->
@@ -158,11 +150,7 @@
           </div>
         </div>
 
-        <!-- Información adicional -->
-        <div class="flex justify-between items-center mt-2 text-xs opacity-60">
-          <span>Presiona Shift + Enter para nueva línea</span>
-          <span>{{ msgForm.get('message')?.value?.length || 0 }}/1000</span>
-        </div>
+
       </form>
     </div>
   </div>
