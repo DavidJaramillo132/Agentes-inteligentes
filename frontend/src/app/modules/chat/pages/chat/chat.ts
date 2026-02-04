@@ -88,7 +88,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     this.route.queryParams.subscribe(params => {
       const sessionId = params['session_id'];
       if (sessionId) {
-        console.log('🔄 Estableciendo sesión desde URL:', sessionId);
+        console.log('[Chat] Estableciendo sesión desde URL:', sessionId);
         this.sseService.setCurrentSession(sessionId);
         this.loadSessionMessages(sessionId);
       }
@@ -101,31 +101,31 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   private loadSessionMessages(sessionId: string): void {
     const agentId = this.agentId();
     if (!agentId) {
-      console.warn('⚠️ No se puede cargar mensajes sin agentId');
+      console.warn('[Chat] No se puede cargar mensajes sin agentId');
       return;
     }
 
     const sessionMessages = this.chatHistoryService.getSessionMessages(sessionId, agentId);
     if (sessionMessages.length > 0) {
-      console.log('📜 Cargando mensajes de la sesión:', sessionMessages);
-      
+      console.log('[Chat] Cargando mensajes de la sesión:', sessionMessages);
+
       // Limpiar mensajes actuales
       this.messageManager.clearMessages(this.messages);
-      
+
       // Cargar mensajes de la sesión
       sessionMessages.forEach(message => {
         this.messages.push({ ...message });
       });
-      
+
       // Programar scroll después de que se rendericen los mensajes
       setTimeout(() => {
         this.scrollManager.scheduleScrollToBottom();
         this.cdr.detectChanges();
       }, 100);
-      
-      console.log('✅ Mensajes de sesión cargados:', this.messages.length);
+
+      console.log('[Chat] Mensajes de sesión cargados:', this.messages.length);
     } else {
-      console.log('ℹ️ No se encontraron mensajes para la sesión:', sessionId);
+      console.log('[Chat] No se encontraron mensajes para la sesión:', sessionId);
     }
   }
 
@@ -142,16 +142,16 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private startNewConversation(content: string) {
-    console.log('🚀 Iniciando nueva conversación:', content);
+    console.log('[Chat] Iniciando nueva conversación:', content);
 
     // Limpiar estado anterior
     this.cleanup();
-    
+
     // Solo limpiar mensajes si no estamos cargando una sesión existente
     if (!this.route.snapshot.queryParams['session_id']) {
       this.messageManager.clearMessages(this.messages);
     }
-    
+
     this.currentMessage = null;
     this.isSending = true;
     this.connectionStatus.setStatus('connecting');
@@ -193,7 +193,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleStreamData(data: StreamResponse) {
-    console.log('📨 Procesando datos del stream:', data);
+    console.log('[Chat] Procesando datos del stream:', data);
     this.connectionStatus.setStatus('streaming');
 
     switch (data.event) {
@@ -203,7 +203,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
       case 'RunStarted':
         this.messageManager.addSystemMessage(
           this.messages,
-          '🤖 El agente está procesando tu solicitud...',
+          'El agente está procesando tu solicitud...',
           'RunStarted'
         );
         break;
@@ -213,19 +213,19 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
       case 'UpdatingMemory':
         this.messageManager.addSystemMessage(
           this.messages,
-          '🧠 Actualizando memoria del agente...',
+          'Actualizando memoria del agente...',
           data.event as EventType
         );
         break;
       case 'ToolCallStarted':
         this.messageManager.addSystemMessage(
           this.messages,
-          '🔧 Ejecutando herramientas...',
+          'Ejecutando herramientas...',
           data.event as EventType
         );
         break;
       default:
-        console.log('ℹ️ Evento no manejado:', data.event, data);
+        console.log('[Chat] Evento no manejado:', data.event, data);
         if (data.currentChunk) {
           this.handleRunResponse(data);
         }
@@ -236,7 +236,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleRunResponse(data: StreamResponse) {
-    console.log('🤖 Respuesta del run:', data);
+    console.log('[Chat] Respuesta del run:', data);
 
     // Crear nuevo mensaje si no existe o el actual está completo
     if (!this.currentMessage || this.currentMessage.isComplete) {
@@ -250,7 +250,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     // Acumular contenido
     if (data.currentChunk) {
       this.currentMessage.content = data.fullContent;
-      console.log('📝 Contenido acumulado:', this.currentMessage.content);
+      console.log('[Chat] Contenido acumulado:', this.currentMessage.content);
 
       // Iniciar efecto typewriter si no está activo
       if (!this.typewriter.isActive()) {
@@ -267,7 +267,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleRunCompleted(data: StreamResponse) {
-    console.log('✅ Ejecución completada:', data);
+    console.log('[Chat] Ejecución completada:', data);
 
     if (this.currentMessage) {
       this.typewriter.completeMessage(this.currentMessage);
@@ -278,7 +278,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleError(error: any) {
-    console.error('❌ Error en el stream:', error);
+    console.error('[Chat] Error en el stream:', error);
     this.connectionStatus.setStatus('error');
     this.typewriter.stopTypewriter();
     this.isSending = false;
@@ -292,7 +292,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     const errorMessage = error.message || 'Error desconocido en la conexión';
     this.messageManager.addErrorMessage(
       this.messages,
-      `❌ Error: ${errorMessage}`
+      `Error: ${errorMessage}`
     );
 
     this.scrollManager.scheduleScrollToBottom();
@@ -300,7 +300,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleComplete() {
-    console.log('✅ Stream completado');
+    console.log('[Chat] Stream completado');
     this.connectionStatus.setStatus('idle');
     this.typewriter.stopTypewriter();
     this.isSending = false;
@@ -360,7 +360,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     this.connectionStatus.setStatus('idle');
     this.messageManager.addSystemMessage(
       this.messages,
-      '🚫 Envío cancelado por el usuario',
+      'Envío cancelado por el usuario',
       'Cancelled' as EventType
     );
   }

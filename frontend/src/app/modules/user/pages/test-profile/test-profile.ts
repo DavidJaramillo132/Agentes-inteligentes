@@ -9,7 +9,7 @@ import { UserService } from '@app/shared/services/user.service';
   template: `
     <div class="min-h-screen bg-base-200 p-8">
       <div class="max-w-2xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6">🧪 Página de Prueba - Profile</h1>
+        <h1 class="text-3xl font-bold mb-6">Página de Prueba - Profile</h1>
         
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
@@ -19,7 +19,7 @@ import { UserService } from '@app/shared/services/user.service';
               <div>
                 <strong>¿Usuario logueado?</strong>
                 <span class="ml-2" [class]="isLoggedIn ? 'text-success' : 'text-error'">
-                  {{ isLoggedIn ? '✅ SÍ' : '❌ NO' }}
+                  {{ isLoggedIn ? 'SÍ' : 'NO' }}
                 </span>
               </div>
               
@@ -29,7 +29,7 @@ import { UserService } from '@app/shared/services/user.service';
               </div>
               
               <div *ngIf="!userInfo">
-                <span class="text-warning">⚠️ No hay información de usuario</span>
+                <span class="text-warning">No hay información de usuario</span>
               </div>
             </div>
             
@@ -49,7 +49,7 @@ export class TestProfile {
   isLoggedIn: boolean = false;
 
   constructor(private userService: UserService) {
-    console.log('🧪 TestProfile: Componente inicializado');
+    console.log('[TestProfile] Componente inicializado');
     this.checkUserStatus();
   }
 
@@ -57,7 +57,7 @@ export class TestProfile {
     this.isLoggedIn = this.userService.isLoggedIn();
     this.userInfo = this.userService.getUserInfo();
     
-    console.log('🧪 TestProfile: isLoggedIn =', this.isLoggedIn);
-    console.log('🧪 TestProfile: userInfo =', this.userInfo);
+    console.log('[TestProfile] isLoggedIn =', this.isLoggedIn);
+    console.log('[TestProfile] userInfo =', this.userInfo);
   }
 }

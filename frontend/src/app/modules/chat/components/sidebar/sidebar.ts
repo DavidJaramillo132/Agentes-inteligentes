@@ -4,7 +4,7 @@ import { ChatButtonComponent } from '../chat-button/chat-button';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { siteConfigRoutes } from '@modules/site/config/site-config.routes';
-import { ChatHistoryService } from '../../services/chat-history.service';  
+import { ChatHistoryService } from '../../services/chat-history.service';
 import { ChatSession } from '../../models/chat-model';
 import { SseService } from '../../services/sse-service';
 import { UserService } from '@app/shared/services/user.service';
@@ -20,10 +20,11 @@ import { takeUntil } from 'rxjs/operators';
 
 export class SidebarComponent implements OnInit, OnDestroy {
   @Input() agentId: string = '';
-  
+
   readonly siteRoutesConfig = siteConfigRoutes;
   chatSessions$: Observable<ChatSession[]>;
   private destroy$ = new Subject<void>();
+  isOpen: boolean = true;
 
   constructor(
     private chatHistoryService: ChatHistoryService,
@@ -71,14 +72,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
   selectChatSession(session: ChatSession): void {
     // Navegar a la sesión específica (esto requerirá modificar las rutas para soportar session_id)
     if (this.agentId && this.agentId.trim() !== '' && session.session_id) {
-      this.router.navigate(['/chat', this.agentId], { 
-        queryParams: { session_id: session.session_id } 
+      this.router.navigate(['/chat', this.agentId], {
+        queryParams: { session_id: session.session_id }
       });
     }
   }
 
   clearConversations(): void {
-    if (this.agentId && this.agentId.trim() !== '') {
+    const confirmed = confirm('¿Estás seguro de que deseas eliminar todas las conversaciones? Esta acción no se puede deshacer.');
+    
+    if (confirmed && this.agentId && this.agentId.trim() !== '') {
       this.chatHistoryService.clearSessions(this.agentId);
     }
   }
@@ -87,6 +90,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (this.agentId && this.agentId.trim() !== '' && session.session_id) {
       this.chatHistoryService.deleteSession(session.session_id, this.agentId);
     }
+  }
+
+  toggleSidebar(): void {
+    this.isOpen = !this.isOpen;
   }
 
   formatDate(timestamp: number): string {
@@ -101,9 +108,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     } else if (diffInDays < 7) {
       return `Hace ${diffInDays} días`;
     } else {
-      return date.toLocaleDateString('es-ES', { 
-        day: 'numeric', 
-        month: 'short' 
+      return date.toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short'
       });
     }
   }
@@ -123,23 +130,23 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // Verificar estado del usuario antes de navegar
     const isLoggedIn = this.userService?.isLoggedIn() || false;
     const userInfo = this.userService?.getUserInfo();
-    
-    console.log('🔐 Sidebar: openAccountSettings called');
-    console.log('🔐 Sidebar: isLoggedIn =', isLoggedIn);
-    console.log('🔐 Sidebar: userInfo =', userInfo);
-    
+
+    console.log('[Sidebar] openAccountSettings called');
+    console.log('[Sidebar] isLoggedIn =', isLoggedIn);
+    console.log('[Sidebar] userInfo =', userInfo);
+
     if (!isLoggedIn) {
-      console.log('❌ Sidebar: Usuario no autenticado, redirigiendo a login');
+      console.log('[Sidebar] Usuario no autenticado, redirigiendo a login');
       this.router.navigate(['/login']);
       return;
     }
-    
+
     // Navegar a la página de perfil del usuario
-    console.log('✅ Sidebar: Navegando a /account');
+    console.log('[Sidebar] Navegando a /account');
     this.router.navigate(['/account']).then(success => {
-      console.log('✅ Sidebar: Navegación exitosa?', success);
+      console.log('[Sidebar] Navegación exitosa?', success);
     }).catch(error => {
-      console.error('❌ Sidebar: Error en navegación:', error);
+      console.error('[Sidebar] Error en navegación:', error);
     });
   }
 

@@ -19,13 +19,13 @@ export class NoAuthGuard implements CanActivate {
     
     // Si el usuario ya está logueado, redirigir a agents
     if (this.userService.isLoggedIn()) {
-      console.log('✅ Usuario ya autenticado, redirigiendo a agents');
+      console.log('[NoAuthGuard] Usuario ya autenticado, redirigiendo a agents');
       this.router.navigate(['/agents']);
       return false;
     }
 
     // Si no está logueado, permitir acceso a login/register
-    console.log('ℹ️ Usuario no autenticado, acceso permitido a login/register');
+    console.log('[NoAuthGuard] Usuario no autenticado, acceso permitido a login/register');
     return true;
   }
 }

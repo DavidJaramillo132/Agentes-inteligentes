@@ -35,16 +35,16 @@ export class ChatUtilsService {
    */
   getEventLabel(event: string): string {
     const labels: { [key: string]: string } = {
-      UserMessage: '👤 Tú',
-      RunResponse: '🤖 Asistente',
-      RunCompleted: '✅ Completado',
-      RunStarted: '🚀 Iniciado',
-      UpdatingMemory: '🧠 Memoria',
-      ToolCallStarted: '🔧 Herramienta',
-      Error: '❌ Error',
-      Cancelled: '🚫 Cancelado',
+      UserMessage: 'Tú',
+      RunResponse: 'Asistente',
+      RunCompleted: 'Completado',
+      RunStarted: 'Iniciado',
+      UpdatingMemory: 'Memoria',
+      ToolCallStarted: 'Herramienta',
+      Error: 'Error',
+      Cancelled: 'Cancelado',
     };
-    return labels[event] || `📋 ${event}`;
+    return labels[event] || event;
   }
 
   /**

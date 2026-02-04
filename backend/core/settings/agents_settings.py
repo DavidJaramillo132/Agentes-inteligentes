@@ -1,9 +1,7 @@
 from pydantic_settings import BaseSettings
 
-
-
 class AgentsSettings(BaseSettings):
-    model_id: str = "llama-3.3-70b-versatile"
+    model_id: str = "llama-3-groq-8b-8192-tool-use-preview"
     groq_api_key: str
 
     web_agent_collection_name: str = "web_agent"
@@ -15,4 +13,4 @@ class AgentsSettings(BaseSettings):
     
     class Config:
         env_file = "core/envs/.agents.env"
-
+    

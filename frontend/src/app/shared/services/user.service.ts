@@ -54,7 +54,7 @@ export class UserService {
     
     // Si no está autenticado pero tiene datos residuales, limpiarlos
     if (!isAuthenticated && (isLoggedFlag || userInfo)) {
-      console.log('🧹 Limpiando datos de sesión inválidos');
+      console.log('[UserService] Limpiando datos de sesión inválidos');
       this.logout();
     }
     
@@ -120,6 +120,6 @@ export class UserService {
       localStorage.setItem('accessToken', userInfo.accessToken);
     }
     
-    console.log('✅ Sesión de usuario establecida:', userInfo.email);
+    console.log('[UserService] Sesión de usuario establecida:', userInfo.email);
   }
 }

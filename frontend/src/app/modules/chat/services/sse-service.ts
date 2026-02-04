@@ -73,8 +73,8 @@ export class SseService {
     const userId = this.userService.getCurrentUserId();
     const sessionId = this.getSessionId(); // Usar sesión persistente
     
-    console.log('🔐 Usuario actual:', userId);
-    console.log('🔑 Sesión actual:', sessionId);
+    console.log('[SSE] Usuario actual:', userId);
+    console.log('[SSE] Sesión actual:', sessionId);
     
     // Registrar el mensaje del usuario en el historial
     this.chatHistoryService.saveOrUpdateSession({
@@ -113,12 +113,12 @@ export class SseService {
 
           const reader = response.body.getReader()
           const decoder = new TextDecoder("utf-8")
-          console.log("📦 Iniciando lectura SSE...")
+          console.log("[SSE] Iniciando lectura SSE...")
 
           while (true) {
             const { value, done } = await reader.read()
             if (done) {
-              console.log("📦 Lectura SSE completada")
+              console.log("[SSE] Lectura SSE completada")
               break
             }
 
@@ -129,24 +129,24 @@ export class SseService {
             const { jsonObjects, remainingBuffer } = this.extractCompleteJsonObjects(buffer)
             buffer = remainingBuffer
 
-            console.log(`📦 Objetos JSON extraídos: ${jsonObjects.length}`)
+            console.log(`[SSE] Objetos JSON extraídos: ${jsonObjects.length}`)
 
             for (const jsonStr of jsonObjects) {
               try {
                 const sseMessage: SSEMessage = JSON.parse(jsonStr)
-                console.log("📨 Evento SSE:", sseMessage.event, "Contenido:", sseMessage.content)
+                console.log("[SSE] Evento SSE:", sseMessage.event, "Contenido:", sseMessage.content)
 
                 // Actualizar fullContent ANTES de procesar el mensaje
                 if (sseMessage.event === "RunResponse" && sseMessage.content) {
                   fullContent += sseMessage.content
-                  console.log("📝 Contenido acumulado:", fullContent)
+                  console.log("[SSE] Contenido acumulado:", fullContent)
                 }
 
                 this.processSSEMessage(sseMessage, fullContent, observer)
 
                 // Terminar si es un evento de finalización
                 if (sseMessage.event === "RunCompleted" || sseMessage.event === "RunError") {
-                  console.log("🏁 Finalizando stream por evento:", sseMessage.event)
+                  console.log("[SSE] Finalizando stream por evento:", sseMessage.event)
                   return
                 }
               } catch (parseError) {
@@ -211,7 +211,7 @@ export class SseService {
             const jsonStr = buffer.substring(startIndex, currentIndex + 1)
             if (jsonStr.trim()) {
               jsonObjects.push(jsonStr)
-              console.log("✅ JSON completo extraído:", jsonStr.substring(0, 100) + "...")
+              console.log("[SSE] JSON completo extraído:", jsonStr.substring(0, 100) + "...")
             }
           }
         }
@@ -224,7 +224,7 @@ export class SseService {
     let remainingBuffer = ""
     if (braceCount > 0) {
       remainingBuffer = buffer.substring(startIndex)
-      console.log("📦 JSON incompleto en buffer:", remainingBuffer.substring(0, 100) + "...")
+      console.log("[SSE] JSON incompleto en buffer:", remainingBuffer.substring(0, 100) + "...")
     }
 
     return { jsonObjects, remainingBuffer }
@@ -240,7 +240,7 @@ export class SseService {
         isError: false,
         rawMessage: sseMessage,
       }
-      console.log("➡️ Enviando respuesta al componente:", streamResponse)
+      console.log("[SSE] Enviando respuesta al componente:", streamResponse)
       observer.next(streamResponse)
     }
 
@@ -253,7 +253,7 @@ export class SseService {
         isError: false,
         rawMessage: sseMessage,
       }
-      console.log("✅ Enviando respuesta completada:", completedResponse)
+      console.log("[SSE] Enviando respuesta completada:", completedResponse)
       observer.next(completedResponse)
       observer.complete()
     }
@@ -267,7 +267,7 @@ export class SseService {
         isError: true,
         rawMessage: sseMessage,
       }
-      console.log("❌ Enviando respuesta de error:", errorResponse)
+      console.log("[SSE] Enviando respuesta de error:", errorResponse)
       observer.next(errorResponse)
       observer.complete()
     }

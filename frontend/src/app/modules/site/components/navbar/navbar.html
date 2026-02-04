@@ -1,0 +1,14 @@
+<nav>
+    <div class="navbar bg-base-100 px-4">
+        <div class="flex-1">
+            <a [routerLink]="siteRoutesConfig.base.url" class="btn btn-ghost normal-case text-xl">
+                Agentes Inteligentes
+            </a>
+        </div>
+        <div class="flex-none gap-2">
+            <button *ngIf="isLoggedIn" (click)="logout()" class="btn btn-error btn-sm rounded-btn">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
+</nav>

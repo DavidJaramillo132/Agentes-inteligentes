@@ -17,7 +17,7 @@ export class TypewriterService {
       return
     }
 
-    console.log("⌨️ Iniciando efecto typewriter")
+    console.log("[Typewriter] Iniciando efecto typewriter")
 
     this.typewriterSubscription = interval(speed).subscribe(() => {
       if (!message) {
@@ -47,7 +47,7 @@ export class TypewriterService {
    */
   stopTypewriter(): void {
     if (this.typewriterSubscription) {
-      console.log("⏹️ Deteniendo efecto typewriter")
+      console.log("[Typewriter] Deteniendo efecto typewriter")
       this.typewriterSubscription.unsubscribe()
       this.typewriterSubscription = null
     }
