@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { ChatSession, BaseAgentEvent, ChatMessage } from '../models/chat-model';
 import { UserService } from '../../../shared/services/user.service';
-import { environment } from '@environments/environment.development';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'

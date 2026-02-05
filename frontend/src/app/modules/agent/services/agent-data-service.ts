@@ -1,6 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '@environments/environment.development';
+import { environment } from '@environments/environment';
 import { adaptAgent, adaptAgents } from '../adapters/agent-adapter';
 import { HttpClient } from '@angular/common/http';
 @Injectable({

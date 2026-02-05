@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { Observable } from "rxjs"
-import { environment } from '@environments/environment.development';
+import { environment } from '@environments/environment';
 import { env } from "process";
 import { UserService } from '../../../shared/services/user.service';
 import { ChatHistoryService } from './chat-history.service';
