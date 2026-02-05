@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 import os
 
-enviroment = os.environ.get("ENVIRONMENT", "dev")
+enviroment = os.environ.get("ENVIRONMENT", "prod")
 
 
 class DatabaseSettings(BaseSettings):

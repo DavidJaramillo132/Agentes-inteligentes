@@ -29,4 +29,13 @@ app.add_middleware(
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # Configuración dinámica según el entorno
+    is_dev = settings.app.environment == "dev"
+    
+    uvicorn.run(
+        "main:app",
+        host=settings.app.host,
+        port=settings.app.port,
+        reload=is_dev,  # Solo reload en desarrollo
+        workers=1 if is_dev else 4  # Más workers en producción
+    )

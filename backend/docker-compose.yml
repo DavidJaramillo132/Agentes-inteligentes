@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongodb:
+    image: mongo:7.0
+    container_name: agentes_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: agent_ia
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - agentes_network
+
+  # Backend FastAPI Service
+  backend:
+    build: .
+    container_name: agentes_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: dev
+      MONGODB_URI: mongodb://mongodb:27017/
+      MONGO_DB_NAME: agent_ia
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+    networks:
+      - agentes_network
+
+volumes:
+  mongodb_data:
+
+networks:
+  agentes_network:
+    driver: bridge
