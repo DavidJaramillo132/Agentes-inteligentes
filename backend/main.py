@@ -28,14 +28,15 @@ app.add_middleware(
 )
 
 
+import os
+
 if __name__ == "__main__":
-    # Configuración dinámica según el entorno
-    is_dev = settings.app.environment == "dev"
+    # Render asigna el puerto dinámicamente via PORT env var
+    port = int(os.environ.get("PORT", 8000))
     
     uvicorn.run(
         "main:app",
-        host=settings.app.host,
-        port=settings.app.port,
-        reload=is_dev,  # Solo reload en desarrollo
-        workers=1 if is_dev else 4  # Más workers en producción
+        host="0.0.0.0",
+        port=port,
+        reload=False  # Sin reload en producción
     )
