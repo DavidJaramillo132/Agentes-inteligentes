@@ -1,24 +1,19 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from core.config import settings
 
 from agno_agents.agent_app import agent_app
-
-from core.config import settings
 
 from modules.user import users_router
 from modules.auth import auth_router
 # from modules.chat.router import router as chat_router
 
 app = FastAPI()
-app.mount("/agents", agent_app)
 
-app.include_router(users_router, prefix="/users", tags=["user"])
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
-# app.include_router(chat_router, prefix="/chat", tags=["chat"])
-
-
+# CORS debe configurarse ANTES de montar las rutas
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.app.allowed_origins,
@@ -27,8 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ahora montamos las rutas
+app.mount("/agents", agent_app)
+app.include_router(users_router, prefix="/users", tags=["user"])
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
+# app.include_router(chat_router, prefix="/chat", tags=["chat"])
 
-import os
 
 if __name__ == "__main__":
     # Render asigna el puerto dinámicamente via PORT env var
