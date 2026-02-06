@@ -27,7 +27,7 @@ export class Register {
                 username: this.username
             };
             console.log('Enviando registro:', payload);
-            this.http.post(environment.agentsDirectUrl + '/auth/register', payload)
+            this.http.post(environment.baseUrl + '/auth/register', payload)
                 .subscribe({
                     next: (res) => {
                         alert('Usuario registrado correctamente');

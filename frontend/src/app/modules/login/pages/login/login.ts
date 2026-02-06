@@ -24,17 +24,17 @@ export class Login {
     }
 
     login(): void {
-        if(this.validaciones_login()) {
+        if (this.validaciones_login()) {
             const payload = {
                 email: this.username,
                 password: this.password
             };
             console.log('Enviando login:', payload);
-            this.http.post(environment.agentsDirectUrl + '/auth/login', payload)
+            this.http.post(environment.baseUrl + '/auth/login', payload)
                 .subscribe({
                     next: (res: any) => {
                         console.log('Respuesta del login:', res);
-                        
+
                         // Guardar información del usuario en localStorage
                         const userInfo = {
                             email: this.username,
@@ -42,13 +42,13 @@ export class Login {
                             loginTime: Date.now(),
                             accessToken: res.access_token?.access_token
                         };
-                        
+
                         localStorage.setItem('userInfo', JSON.stringify(userInfo));
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('accessToken', res.access_token?.access_token || '');
-                        
+
                         console.log('Información del usuario guardada:', userInfo);
-                        
+
                         alert('Usuario logueado correctamente');
                         this.router.navigate(['/agents']);
                     },
