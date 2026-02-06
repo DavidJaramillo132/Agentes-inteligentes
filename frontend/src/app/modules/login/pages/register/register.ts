@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
+
 
 @Component({
     selector: 'app-register',
@@ -25,7 +27,7 @@ export class Register {
                 username: this.username
             };
             console.log('Enviando registro:', payload);
-            this.http.post('http://localhost:8000/auth/register', payload)
+            this.http.post(environment.agentsDirectUrl + '/auth/register', payload)
                 .subscribe({
                     next: (res) => {
                         alert('Usuario registrado correctamente');

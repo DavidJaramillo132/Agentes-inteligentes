@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
+
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -28,7 +30,7 @@ export class Login {
                 password: this.password
             };
             console.log('Enviando login:', payload);
-            this.http.post('http://localhost:8000/auth/login', payload)
+            this.http.post(environment.agentsDirectUrl + '/auth/login', payload)
                 .subscribe({
                     next: (res: any) => {
                         console.log('Respuesta del login:', res);
