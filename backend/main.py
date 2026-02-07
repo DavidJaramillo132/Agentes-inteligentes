@@ -16,7 +16,7 @@ app = FastAPI()
 # CORS debe configurarse ANTES de montar las rutas
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.app.allowed_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
