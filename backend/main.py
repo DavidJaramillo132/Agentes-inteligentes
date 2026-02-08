@@ -16,7 +16,7 @@ app = FastAPI()
 # CORS debe configurarse ANTES de montar las rutas
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://agentes-inteligentes-lilac.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
