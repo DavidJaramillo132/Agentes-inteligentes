@@ -18,13 +18,32 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 
+@app.get("/")
+async def root():
+    """Respuesta en raiz para que el health check de Render (HEAD /) devuelva 200."""
+    return {"status": "ok"}
+
+
+@app.get("/health")
+async def health():
+    """Endpoint sin DB para comprobar que la app esta viva (p. ej. tras cold start en Render)."""
+    return {"status": "ok"}
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc: Exception):
-    """Loguea cualquier excepcion no capturada y devuelve 500 con JSON para que CORS se aplique."""
+    """Loguea cualquier excepcion no capturada y devuelve 500 con JSON y cabeceras CORS."""
     logger.exception("Error no capturado: %s", exc)
+    origin = request.headers.get("origin", "")
+    allowed = settings.app.allowed_origins
+    headers = {}
+    if origin in allowed:
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal server error"},
+        headers=headers,
     )
 
 # CORS: usa settings para poder override con ALLOWED_ORIGINS en Render
