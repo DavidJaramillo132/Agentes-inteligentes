@@ -1,7 +1,9 @@
+import logging
 import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from core.config import settings
 
@@ -11,12 +13,24 @@ from modules.user import users_router
 from modules.auth import auth_router
 # from modules.chat.router import router as chat_router
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
-# CORS debe configurarse ANTES de montar las rutas
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc: Exception):
+    """Loguea cualquier excepcion no capturada y devuelve 500 con JSON para que CORS se aplique."""
+    logger.exception("Error no capturado: %s", exc)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
+    )
+
+# CORS: usa settings para poder override con ALLOWED_ORIGINS en Render
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://agentes-inteligentes-lilac.vercel.app"],
+    allow_origins=settings.app.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

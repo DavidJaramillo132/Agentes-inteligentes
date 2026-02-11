@@ -60,6 +60,7 @@ class AuthService:
         return user
 
     async def register_user(self, user: UserCreateSchema) -> UserResponseSchema:
+        logger.info("Registro solicitado para email: %s", user.email)
         found_user = await collection.find_one({"email": user.email})
         if found_user is not None:
             raise HTTPException(

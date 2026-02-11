@@ -11,8 +11,8 @@ class AppSettings(BaseSettings):
     environment: str = "dev"
     debug: bool = True
 
-    # CORS 
-    allowed_origins: list[str]
+    # CORS: por defecto el front en Vercel; en Render configurar ALLOWED_ORIGINS si hace falta
+    allowed_origins: list[str] = ["https://agentes-inteligentes-lilac.vercel.app"]
     
     # Server settings
     host: str = "0.0.0.0"
