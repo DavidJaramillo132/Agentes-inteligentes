@@ -25,7 +25,14 @@
                     class="border border-gray-600 bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500/70" placeholder="Confirma tu contraseña" required>
                 </div>
             </div>
-            <button type="submit" class="px-5 py-2 text-center rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all cursor-pointer text-white">Registrarse</button>
+            <button 
+                type="submit" 
+                [disabled]="isLoading"
+                class="px-5 py-2 text-center rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all cursor-pointer text-white disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                
+                <span *ngIf="isLoading" class="spinner"></span>
+                <span>{{ isLoading ? 'Registrando...' : 'Registrarse' }}</span>
+            </button>
         </form>
         <div class="mt-3 text-center">
             ¿Ya tienes una cuenta? <a href="#" class="text-blue-400 hover:underline">Inicia sesión</a>

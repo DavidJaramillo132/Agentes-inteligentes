@@ -44,13 +44,11 @@ export class SseService {
   // Método para iniciar una nueva sesión de chat
   startNewChatSession(): void {
     this.currentSessionId = this.userService.generateSessionId();
-    console.log(' Nueva sesión de chat iniciada:', this.currentSessionId);
   }
 
   // Método para establecer una sesión específica
   setCurrentSession(sessionId: string): void {
     this.currentSessionId = sessionId;
-    console.log(' Sesión establecida:', this.currentSessionId);
   }
 
   // Método para obtener el session ID actual
@@ -72,9 +70,6 @@ export class SseService {
     // Obtener información del usuario logueado
     const userId = this.userService.getCurrentUserId();
     const sessionId = this.getSessionId(); // Usar sesión persistente
-    
-    console.log('[SSE] Usuario actual:', userId);
-    console.log('[SSE] Sesión actual:', sessionId);
     
     // Registrar el mensaje del usuario en el historial
     this.chatHistoryService.saveOrUpdateSession({
@@ -113,12 +108,10 @@ export class SseService {
 
           const reader = response.body.getReader()
           const decoder = new TextDecoder("utf-8")
-          console.log("[SSE] Iniciando lectura SSE...")
 
           while (true) {
             const { value, done } = await reader.read()
             if (done) {
-              console.log("[SSE] Lectura SSE completada")
               break
             }
 
@@ -129,24 +122,20 @@ export class SseService {
             const { jsonObjects, remainingBuffer } = this.extractCompleteJsonObjects(buffer)
             buffer = remainingBuffer
 
-            console.log(`[SSE] Objetos JSON extraídos: ${jsonObjects.length}`)
 
             for (const jsonStr of jsonObjects) {
               try {
                 const sseMessage: SSEMessage = JSON.parse(jsonStr)
-                console.log("[SSE] Evento SSE:", sseMessage.event, "Contenido:", sseMessage.content)
 
                 // Actualizar fullContent ANTES de procesar el mensaje
                 if (sseMessage.event === "RunResponse" && sseMessage.content) {
                   fullContent += sseMessage.content
-                  console.log("[SSE] Contenido acumulado:", fullContent)
                 }
 
                 this.processSSEMessage(sseMessage, fullContent, observer)
 
                 // Terminar si es un evento de finalización
                 if (sseMessage.event === "RunCompleted" || sseMessage.event === "RunError") {
-                  console.log("[SSE] Finalizando stream por evento:", sseMessage.event)
                   return
                 }
               } catch (parseError) {
@@ -211,7 +200,6 @@ export class SseService {
             const jsonStr = buffer.substring(startIndex, currentIndex + 1)
             if (jsonStr.trim()) {
               jsonObjects.push(jsonStr)
-              console.log("[SSE] JSON completo extraído:", jsonStr.substring(0, 100) + "...")
             }
           }
         }
@@ -224,7 +212,7 @@ export class SseService {
     let remainingBuffer = ""
     if (braceCount > 0) {
       remainingBuffer = buffer.substring(startIndex)
-      console.log("[SSE] JSON incompleto en buffer:", remainingBuffer.substring(0, 100) + "...")
+      console.warn("[SSE] JSON incompleto en buffer:", remainingBuffer.substring(0, 100) + "...")
     }
 
     return { jsonObjects, remainingBuffer }
@@ -240,7 +228,6 @@ export class SseService {
         isError: false,
         rawMessage: sseMessage,
       }
-      console.log("[SSE] Enviando respuesta al componente:", streamResponse)
       observer.next(streamResponse)
     }
 
@@ -253,7 +240,6 @@ export class SseService {
         isError: false,
         rawMessage: sseMessage,
       }
-      console.log("[SSE] Enviando respuesta completada:", completedResponse)
       observer.next(completedResponse)
       observer.complete()
     }
@@ -267,7 +253,6 @@ export class SseService {
         isError: true,
         rawMessage: sseMessage,
       }
-      console.log("[SSE] Enviando respuesta de error:", errorResponse)
       observer.next(errorResponse)
       observer.complete()
     }

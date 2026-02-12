@@ -3,12 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs/operators';
 
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [FormsModule],
+    imports: [FormsModule, CommonModule],
+    styleUrls: ['./register.css'],
     templateUrl: './register.html'
 })
 export class Register {
@@ -16,28 +19,39 @@ export class Register {
     email: string = '';
     password: string = '';
     confirmPassword: string = '';
+    isLoading: boolean = false;
 
     constructor(private router: Router, private http: HttpClient) { }
 
     registrar(): void {
-        if (this.validaciones_register()) {
-            const payload = {
-                email: this.email,
-                password: this.password,
-                username: this.username
-            };
-            console.log('Enviando registro:', payload);
-            this.http.post(environment.baseUrl + '/auth/register', payload)
-                .subscribe({
-                    next: (res) => {
-                        alert('Usuario registrado correctamente');
-                        this.router.navigate(['/agents']);
-                    },
-                    error: (err) => {
-                        alert('Error al registrar usuario: ' + (err.error?.detail || err.message));
-                    }
-                });
+        if (!this.validaciones_register()) {
+            return;
         }
+
+        this.isLoading = true;
+
+        const payload = {
+            email: this.email,
+            password: this.password,
+            username: this.username
+        };
+
+        this.http.post(environment.baseUrl + '/auth/register', payload)
+            .pipe(
+                finalize(() => {
+                    // Esto SIEMPRE se ejecuta al finalizar
+                    this.isLoading = false;
+                })
+            )
+            .subscribe({
+                next: (res) => {
+                    alert('Usuario registrado correctamente');
+                    this.router.navigate(['/login']);
+                },
+                error: (err) => {
+                    alert('Error al registrar usuario: ' + (err.error?.detail || err.message));
+                }
+            });
     }
 
     validaciones_register(): boolean {

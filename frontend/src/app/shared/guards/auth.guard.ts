@@ -16,16 +16,12 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): boolean {
     
-    console.log('[AuthGuard] Verificando acceso a:', state.url);
     const isLoggedIn = this.userService.isLoggedIn();
-    console.log('[AuthGuard] Usuario logueado?', isLoggedIn);
     
     if (isLoggedIn) {
-      console.log('[AuthGuard] Usuario autenticado, acceso permitido a', state.url);
       return true;
     }
 
-    console.log('[AuthGuard] Usuario no autenticado, redirigiendo al login desde', state.url);
     this.router.navigate(['/login'], { 
       queryParams: { returnUrl: state.url }
     });

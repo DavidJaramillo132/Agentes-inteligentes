@@ -13,7 +13,6 @@ export class MessageManagerService {
    */
   addMessage(messages: ChatMessage[], message: ChatMessage): void {
     messages.push(message);
-    console.log(`[MessageManager] Mensaje agregado: ${message.event}`, message);
   }
 
   /**
@@ -71,7 +70,6 @@ export class MessageManagerService {
       message.displayedContent = message.content;
       message.isComplete = true;
       message.isStreaming = false;
-      console.log('[MessageManager] Mensaje completado:', message.id);
     }
   }
 
@@ -80,7 +78,6 @@ export class MessageManagerService {
    */
   clearMessages(messages: ChatMessage[]): void {
     messages.length = 0;
-    console.log('[MessageManager] Mensajes limpiados');
   }
 
   /**

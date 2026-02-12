@@ -13,7 +13,6 @@ export class AgentDataService {
   getAgents() {
     return httpResource(() => this.agentsDirectUrl, {
       parse: (response: any) => {
-        console.log(response);
         return adaptAgents(response);
       },
     });

@@ -119,32 +119,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
     return session.session_id;
   }
 
-  // Funciones para los botones del menú inferior
-  toggleLightMode(): void {
-    // Aquí puedes implementar la lógica para cambiar entre modo claro y oscuro
-    console.log('Toggle light mode clicked');
-    // Ejemplo: this.themeService.toggleTheme();
-  }
-
   openAccountSettings(): void {
     // Verificar estado del usuario antes de navegar
     const isLoggedIn = this.userService?.isLoggedIn() || false;
     const userInfo = this.userService?.getUserInfo();
 
-    console.log('[Sidebar] openAccountSettings called');
-    console.log('[Sidebar] isLoggedIn =', isLoggedIn);
-    console.log('[Sidebar] userInfo =', userInfo);
-
     if (!isLoggedIn) {
-      console.log('[Sidebar] Usuario no autenticado, redirigiendo a login');
       this.router.navigate(['/login']);
       return;
     }
 
     // Navegar a la página de perfil del usuario
-    console.log('[Sidebar] Navegando a /account');
     this.router.navigate(['/account']).then(success => {
-      console.log('[Sidebar] Navegación exitosa?', success);
     }).catch(error => {
       console.error('[Sidebar] Error en navegación:', error);
     });

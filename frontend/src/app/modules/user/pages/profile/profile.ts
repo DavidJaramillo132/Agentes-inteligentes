@@ -32,7 +32,6 @@ export class UserProfile implements OnInit {
         return;
       }
 
-      console.log('Información del usuario cargada:', this.userInfo);
     } catch (error) {
       console.error('Error al cargar información del usuario:', error);
     } finally {

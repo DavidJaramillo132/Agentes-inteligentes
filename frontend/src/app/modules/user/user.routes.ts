@@ -16,10 +16,6 @@ export const lazyUserRoutes: Routes = [
         path: 'profile',
         loadComponent: () => import('./pages/profile/profile').then(m => m.UserProfile),
       },
-      {
-        path: 'test',
-        loadComponent: () => import('./pages/test-profile/test-profile').then(m => m.TestProfile),
-      },
     ],
   },
 ];

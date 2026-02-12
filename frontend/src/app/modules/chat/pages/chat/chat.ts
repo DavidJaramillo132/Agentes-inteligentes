@@ -88,7 +88,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     this.route.queryParams.subscribe(params => {
       const sessionId = params['session_id'];
       if (sessionId) {
-        console.log('[Chat] Estableciendo sesión desde URL:', sessionId);
         this.sseService.setCurrentSession(sessionId);
         this.loadSessionMessages(sessionId);
       }
@@ -107,8 +106,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
 
     const sessionMessages = this.chatHistoryService.getSessionMessages(sessionId, agentId);
     if (sessionMessages.length > 0) {
-      console.log('[Chat] Cargando mensajes de la sesión:', sessionMessages);
-
+    
       // Limpiar mensajes actuales
       this.messageManager.clearMessages(this.messages);
 
@@ -123,9 +121,8 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
         this.cdr.detectChanges();
       }, 100);
 
-      console.log('[Chat] Mensajes de sesión cargados:', this.messages.length);
     } else {
-      console.log('[Chat] No se encontraron mensajes para la sesión:', sessionId);
+      console.warn('[Chat] No se encontraron mensajes para la sesión:', sessionId);
     }
   }
 
@@ -142,7 +139,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private startNewConversation(content: string) {
-    console.log('[Chat] Iniciando nueva conversación:', content);
 
     // Limpiar estado anterior
     this.cleanup();
@@ -193,7 +189,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleStreamData(data: StreamResponse) {
-    console.log('[Chat] Procesando datos del stream:', data);
     this.connectionStatus.setStatus('streaming');
 
     switch (data.event) {
@@ -201,8 +196,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
         this.handleRunResponse(data);
         break;
       case 'RunStarted':
-        this.messageManager.addSystemMessage(
-          this.messages,
+        this.addSystemMessageIfNotDuplicate(
           'El agente está procesando tu solicitud...',
           'RunStarted'
         );
@@ -211,21 +205,18 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
         this.handleRunCompleted(data);
         break;
       case 'UpdatingMemory':
-        this.messageManager.addSystemMessage(
-          this.messages,
+        this.addSystemMessageIfNotDuplicate(
           'Actualizando memoria del agente...',
           data.event as EventType
         );
         break;
       case 'ToolCallStarted':
-        this.messageManager.addSystemMessage(
-          this.messages,
+        this.addSystemMessageIfNotDuplicate(
           'Ejecutando herramientas...',
           data.event as EventType
         );
         break;
       default:
-        console.log('[Chat] Evento no manejado:', data.event, data);
         if (data.currentChunk) {
           this.handleRunResponse(data);
         }
@@ -236,7 +227,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleRunResponse(data: StreamResponse) {
-    console.log('[Chat] Respuesta del run:', data);
 
     // Crear nuevo mensaje si no existe o el actual está completo
     if (!this.currentMessage || this.currentMessage.isComplete) {
@@ -250,7 +240,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     // Acumular contenido
     if (data.currentChunk) {
       this.currentMessage.content = data.fullContent;
-      console.log('[Chat] Contenido acumulado:', this.currentMessage.content);
 
       // Iniciar efecto typewriter si no está activo
       if (!this.typewriter.isActive()) {
@@ -267,7 +256,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleRunCompleted(data: StreamResponse) {
-    console.log('[Chat] Ejecución completada:', data);
 
     if (this.currentMessage) {
       this.typewriter.completeMessage(this.currentMessage);
@@ -275,6 +263,26 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
 
     this.scrollManager.scheduleScrollToBottom();
     this.cdr.detectChanges();
+  }
+
+  /**
+   * Agrega un mensaje de sistema solo si el último mensaje no tiene el mismo contenido
+   */
+  private addSystemMessageIfNotDuplicate(content: string, event: EventType) {
+    const lastMessage = this.messages[this.messages.length - 1];
+    
+    // Si el último mensaje tiene el mismo evento y contenido, no agregar duplicado
+    if (lastMessage && 
+        lastMessage.event === event && 
+        lastMessage.content === content) {
+      return;
+    }
+    
+    this.messageManager.addSystemMessage(
+      this.messages,
+      content,
+      event
+    );
   }
 
   private handleError(error: any) {
@@ -300,7 +308,6 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private handleComplete() {
-    console.log('[Chat] Stream completado');
     this.connectionStatus.setStatus('idle');
     this.typewriter.stopTypewriter();
     this.isSending = false;

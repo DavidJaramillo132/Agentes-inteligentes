@@ -3,16 +3,21 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs/operators';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [FormsModule, RouterModule],
+    imports: [FormsModule, RouterModule, CommonModule],
+    styleUrls: ['./login.css'],
     templateUrl: './login.html'
 })
 export class Login {
     username: string = '';
     password: string = '';
+    isLoading: boolean = false;
+
 
     constructor(private router: Router, private http: HttpClient) { }
 
@@ -24,39 +29,45 @@ export class Login {
     }
 
     login(): void {
-        if (this.validaciones_login()) {
-            const payload = {
-                email: this.username,
-                password: this.password
-            };
-            console.log('Enviando login:', payload);
-            this.http.post(environment.baseUrl + '/auth/login', payload)
-                .subscribe({
-                    next: (res: any) => {
-                        console.log('Respuesta del login:', res);
-
-                        // Guardar información del usuario en localStorage
-                        const userInfo = {
-                            email: this.username,
-                            userId: res.user?.id || res.user?._id || this.generateUserId(this.username),
-                            loginTime: Date.now(),
-                            accessToken: res.access_token?.access_token
-                        };
-
-                        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('accessToken', res.access_token?.access_token || '');
-
-                        console.log('Información del usuario guardada:', userInfo);
-
-                        alert('Usuario logueado correctamente');
-                        this.router.navigate(['/agents']);
-                    },
-                    error: (err) => {
-                        alert('Error al iniciar sesión: ' + (err.error?.detail || err.message));
-                    }
-                });
+        if (!this.validaciones_login()) {
+            return;
         }
+
+        this.isLoading = true;
+        
+        const payload = {
+            email: this.username,
+            password: this.password
+        };
+
+        this.http.post(environment.baseUrl + '/auth/login', payload)
+            .pipe(
+                finalize(() => {
+                    // Esto SIEMPRE se ejecuta al finalizar
+                    this.isLoading = false;
+                })
+            )
+            .subscribe({
+                next: (res: any) => {
+                    // Guardar información del usuario en localStorage
+                    const userInfo = {
+                        email: this.username,
+                        userId: res.user?.id || res.user?._id || this.generateUserId(this.username),
+                        loginTime: Date.now(),
+                        accessToken: res.access_token?.access_token
+                    };
+
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('accessToken', res.access_token?.access_token || '');
+
+                    alert('Usuario logueado correctamente');
+                    this.router.navigate(['/agents']);
+                },
+                error: (err) => {
+                    alert('Error al iniciar sesión: ' + (err.error?.detail || err.message));
+                }
+            });
     }
 
 

@@ -6,6 +6,9 @@
             </a>
         </div>
         <div class="flex-none gap-2">
+            <a *ngIf="isLoggedIn" routerLink="/account/profile" class="btn btn-ghost btn-sm rounded-btn">
+                Mi Perfil
+            </a>
             <button *ngIf="isLoggedIn" (click)="logout()" class="btn btn-error btn-sm rounded-btn">
                 Cerrar Sesión
             </button>
